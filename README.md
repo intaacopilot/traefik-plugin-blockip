@@ -446,4 +446,4 @@ For issues, features, or questions:
 ### v1.0.0 (2025-11-27)
 - Initial release
 - Basic IP blocking and whitelisting
-- CIDR range support
+- CIDR range support# traefik-plugin-blockip
