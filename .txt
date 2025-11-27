@@ -1,0 +1,24 @@
+# Traefik Plugin Definition
+displayName: BlockIP
+type: middleware
+import: github.com/intaacopilot/traefik-plugin-blockip
+summary: Block or allow HTTP requests based on client IP address with caching and optimized performance
+testData:
+  blockedIPs:
+    - "192.168.1.100"
+    - "10.0.0.50"
+  blockedCIDRs:
+    - "192.168.0.0/16"
+    - "10.0.0.0/8"
+    - "2001:db8::/32"
+  whitelistIPs:
+    - "127.0.0.1"
+    - "::1"
+  whitelistCIDRs:
+    - "192.168.1.0/24"
+    - "10.0.0.0/16"
+    - "2001:db8:1::/48"
+  statusCode: 403
+  message: "Access Denied"
+  cacheTTL: 300
+  debug: false

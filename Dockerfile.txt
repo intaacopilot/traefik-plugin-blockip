@@ -1,0 +1,26 @@
+# Build stage
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apk add --no-cache git make
+
+# Copy source
+COPY .  .
+
+# Download dependencies
+RUN go mod download
+RUN go mod tidy
+
+# Build
+RUN go build -v -o traefik-plugin-blockip .
+
+# Runtime stage
+FROM scratch
+
+COPY --from=builder /build/traefik-plugin-blockip /traefik-plugin-blockip
+COPY --from=builder /build/. traefik.yml /.traefik.yml
+COPY --from=builder /build/manifest.yaml /manifest.yaml
+
+ENTRYPOINT ["/traefik-plugin-blockip"]

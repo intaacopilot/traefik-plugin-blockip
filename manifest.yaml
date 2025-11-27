@@ -1,0 +1,20 @@
+name: traefik-plugin-blockip
+version: 2.0.0
+author: intaacopilot
+description: Optimized Traefik middleware plugin to block or allow requests based on client IP with caching and comprehensive error handling
+url: https://github.com/intaacopilot/traefik-plugin-blockip
+license: MIT
+compatibility:
+  traefik_versions:
+    - "^3.0.0"
+    - "^2.10.0"
+  go_versions:
+    - "1.21"
+    - "1.22"
+features:
+  - IP blocking and whitelisting
+  - CIDR range support (IPv4 and IPv6)
+  - Request caching for performance
+  - Comprehensive error handling
+  - Debug logging
+  - Multiple header support (X-Forwarded-For, X-Real-IP, CF-Connecting-IP)

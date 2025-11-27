@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Build script for Traefik BlockIP plugin
+set -e
+
+PLUGIN_NAME="traefik-plugin-blockip"
+VERSION="2.0. 0"
+OUTPUT_DIR="dist"
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}Building Traefik BlockIP Plugin${NC}"
+echo "Version: $VERSION"
+echo ""
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+
+# Build for Linux AMD64
+echo -e "${YELLOW}Building for Linux AMD64... ${NC}"
+GOOS=linux GOARCH=amd64 go build -v -o "$OUTPUT_DIR/$PLUGIN_NAME-linux-amd64" . 
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Built: $OUTPUT_DIR/$PLUGIN_NAME-linux-amd64${NC}"
+else
+    echo -e "${RED}✗ Failed to build Linux AMD64${NC}"
+    exit 1
+fi
+
+# Build for Linux ARM64
+echo -e "${YELLOW}Building for Linux ARM64...${NC}"
+GOOS=linux GOARCH=arm64 go build -v -o "$OUTPUT_DIR/$PLUGIN_NAME-linux-arm64" . 
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Built: $OUTPUT_DIR/$PLUGIN_NAME-linux-arm64${NC}"
+else
+    echo -e "${RED}✗ Failed to build Linux ARM64${NC}"
+    exit 1
+fi
+
+# Build for Darwin AMD64
+echo -e "${YELLOW}Building for Darwin AMD64...${NC}"
+GOOS=darwin GOARCH=amd64 go build -v -o "$OUTPUT_DIR/$PLUGIN_NAME-darwin-amd64" .
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Built: $OUTPUT_DIR/$PLUGIN_NAME-darwin-amd64${NC}"
+else
+    echo -e "${RED}✗ Failed to build Darwin AMD64${NC}"
+    exit 1
+fi
+
+# Build for Darwin ARM64
+echo -e "${YELLOW}Building for Darwin ARM64...${NC}"
+GOOS=darwin GOARCH=arm64 go build -v -o "$OUTPUT_DIR/$PLUGIN_NAME-darwin-arm64" .
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Built: $OUTPUT_DIR/$PLUGIN_NAME-darwin-arm64${NC}"
+else
+    echo -e "${RED}✗ Failed to build Darwin ARM64${NC}"
+    exit 1
+fi
+
+# List built files
+echo ""
+echo -e "${GREEN}Build complete!  Files:${NC}"
+ls -lh "$OUTPUT_DIR/"
+
+# Show checksums
+echo ""
+echo -e "${YELLOW}Checksums:${NC}"
+sha256sum "$OUTPUT_DIR"/*

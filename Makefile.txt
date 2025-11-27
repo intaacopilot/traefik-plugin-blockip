@@ -1,0 +1,90 @@
+. PHONY: build test clean install lint fmt
+
+# Build variables
+PLUGIN_NAME=traefik-plugin-blockip
+VERSION=2.0.0
+GO=go
+GOFLAGS=-v
+OUTPUT_DIR=dist
+
+# Build the plugin as a Go module
+build:
+	@echo "Building $(PLUGIN_NAME)..."
+	$(GO) build $(GOFLAGS) -o $(OUTPUT_DIR)/$(PLUGIN_NAME) .
+
+# Build for different architectures
+build-all: build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64
+
+build-linux-amd64:
+	@echo "Building for Linux AMD64..."
+	GOOS=linux GOARCH=amd64 $(GO) build $(GOFLAGS) -o $(OUTPUT_DIR)/$(PLUGIN_NAME)-linux-amd64 . 
+
+build-linux-arm64:
+	@echo "Building for Linux ARM64..."
+	GOOS=linux GOARCH=arm64 $(GO) build $(GOFLAGS) -o $(OUTPUT_DIR)/$(PLUGIN_NAME)-linux-arm64 .
+
+build-darwin-amd64:
+	@echo "Building for Darwin AMD64..."
+	GOOS=darwin GOARCH=amd64 $(GO) build $(GOFLAGS) -o $(OUTPUT_DIR)/$(PLUGIN_NAME)-darwin-amd64 .
+
+build-darwin-arm64:
+	@echo "Building for Darwin ARM64..."
+	GOOS=darwin GOARCH=arm64 $(GO) build $(GOFLAGS) -o $(OUTPUT_DIR)/$(PLUGIN_NAME)-darwin-arm64 .
+
+# Run tests
+test:
+	@echo "Running tests..."
+	$(GO) test -v -cover -race ./...
+
+# Run benchmarks
+bench:
+	@echo "Running benchmarks..."
+	$(GO) test -bench=. -benchmem ./...
+
+# Format code
+fmt:
+	@echo "Formatting code..."
+	$(GO) fmt ./...
+
+# Lint code
+lint:
+	@echo "Linting code..."
+	golangci-lint run ./...
+
+# Run coverage
+coverage:
+	@echo "Generating coverage report..."
+	$(GO) test -v -coverprofile=coverage.out ./...
+	$(GO) tool cover -html=coverage.out -o coverage. html
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning..."
+	rm -rf $(OUTPUT_DIR)
+
+# Install dependencies
+install-deps:
+	$(GO) mod download
+	$(GO) mod tidy
+
+# Install lint tools
+install-tools:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+help:
+	@echo "Available targets:"
+	@echo "  make build              - Build the plugin"
+	@echo "  make build-all          - Build for all platforms"
+	@echo "  make build-linux-amd64  - Build for Linux AMD64"
+	@echo "  make build-linux-arm64  - Build for Linux ARM64"
+	@echo "  make build-darwin-amd64 - Build for Darwin AMD64"
+	@echo "  make build-darwin-arm64 - Build for Darwin ARM64"
+	@echo "  make test               - Run tests"
+	@echo "  make bench              - Run benchmarks"
+	@echo "  make fmt                - Format code"
+	@echo "  make lint               - Lint code"
+	@echo "  make coverage           - Generate coverage report"
+	@echo "  make clean              - Clean build artifacts"
+	@echo "  make install-deps       - Install dependencies"
+	@echo "  make install-tools      - Install lint tools"
+	@echo "  make help               - Show this help message"
