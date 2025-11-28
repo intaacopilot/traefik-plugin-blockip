@@ -1,0 +1,17 @@
+# Traefik Plugin Manifest
+displayName: BlockIP
+type: middleware
+import: github.com/intaacopilot/traefik-plugin-blockip
+summary: Block or allow HTTP requests based on client IP address with CIDR support
+testData:
+  blockedCIDRs:
+    - "192.168.0.0/16"
+    - "10.0.0.0/8"
+  whitelistCIDRs:
+    - "192.168.1.0/24"
+  whitelistIPs:
+    - "127.0.0.1"
+  statusCode: 403
+  message: "Access Denied"
+  cacheTTL: 300
+  debug: false
