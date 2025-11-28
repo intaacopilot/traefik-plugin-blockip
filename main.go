@@ -71,7 +71,7 @@ type BlockIP struct {
 }
 
 // New creates and returns a new BlockIP plugin instance
-func New(ctx context. Context, next http.Handler, config *Config, name string) (http.Handler, error) {
+func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
 	if config == nil {
 		return nil, fmt.Errorf("config is nil")
 	}
@@ -84,14 +84,14 @@ func New(ctx context. Context, next http.Handler, config *Config, name string) (
 		next:   next,
 		name:   name,
 		debug:  config.Debug,
-		lookup: newIPLookupService(config. CacheTTL),
+		lookup: newIPLookupService(config.CacheTTL),
 	}
 
 	// Set status code
 	if config.StatusCode == 0 {
-		plugin. statusCode = 403
+		plugin.statusCode = 403
 	} else if config.StatusCode < 400 || config.StatusCode >= 600 {
-		return nil, fmt.Errorf("invalid status code: %d, must be 4xx or 5xx", config. StatusCode)
+		return nil, fmt.Errorf("invalid status code: %d, must be 4xx or 5xx", config.StatusCode)
 	} else {
 		plugin.statusCode = config.StatusCode
 	}
@@ -111,7 +111,7 @@ func New(ctx context. Context, next http.Handler, config *Config, name string) (
 	}
 
 	if plugin.debug {
-		fmt. Printf("[%s] Plugin initialized with status code %d\n", plugin.name, plugin.statusCode)
+		fmt.Printf("[%s] Plugin initialized with status code %d\n", plugin.name, plugin.statusCode)
 	}
 
 	return plugin, nil
@@ -146,14 +146,14 @@ func (p *BlockIP) loadConfiguration(config *Config) error {
 
 		if ! isValidIP(ip) {
 			if p.debug {
-				fmt. Printf("[%s] Invalid IP format: %s\n", p. name, ip)
+				fmt.Printf("[%s] Invalid IP format: %s\n", p.name, ip)
 			}
 			continue
 		}
 
 		p.lookup.blockedIPsSet[ip] = true
 		if p.debug {
-			fmt. Printf("[%s] Added blocked IP: %s\n", p. name, ip)
+			fmt.Printf("[%s] Added blocked IP: %s\n", p.name, ip)
 		}
 	}
 
@@ -166,13 +166,13 @@ func (p *BlockIP) loadConfiguration(config *Config) error {
 
 		if err := p.parseCIDR(cidr, true); err != nil {
 			if p.debug {
-				fmt. Printf("[%s] Error parsing blocked CIDR %s: %v\n", p.name, cidr, err)
+				fmt.Printf("[%s] Error parsing blocked CIDR %s: %v\n", p.name, cidr, err)
 			}
 			continue
 		}
 
 		if p.debug {
-			fmt. Printf("[%s] Added blocked CIDR: %s\n", p.name, cidr)
+			fmt.Printf("[%s] Added blocked CIDR: %s\n", p.name, cidr)
 		}
 	}
 
@@ -211,17 +211,17 @@ func (p *BlockIP) loadConfiguration(config *Config) error {
 		}
 
 		if p.debug {
-			fmt. Printf("[%s] Added whitelist CIDR: %s\n", p.name, cidr)
+			fmt.Printf("[%s] Added whitelist CIDR: %s\n", p.name, cidr)
 		}
 	}
 
 	if p.debug {
-		fmt. Printf("[%s] Configuration loaded.  Blocked IPs: %d, Blocked CIDRs: %d, Whitelist IPs: %d, Whitelist CIDRs: %d\n",
+		fmt.Printf("[%s] Configuration loaded.Blocked IPs: %d, Blocked CIDRs: %d, Whitelist IPs: %d, Whitelist CIDRs: %d\n",
 			p.name,
-			len(p.lookup. blockedIPsSet),
+			len(p.lookup.blockedIPsSet),
 			len(p.lookup.blockedNets),
 			len(p.lookup.whitelistIPsSet),
-			len(p. lookup.whitelistNets),
+			len(p.lookup.whitelistNets),
 		)
 	}
 
@@ -236,9 +236,9 @@ func (p *BlockIP) parseCIDR(cidr string, isBlocked bool) error {
 	}
 
 	if isBlocked {
-		p. lookup.blockedNets = append(p.lookup.blockedNets, ipnet)
+		p.lookup.blockedNets = append(p.lookup.blockedNets, ipnet)
 	} else {
-		p.lookup. whitelistNets = append(p.lookup.whitelistNets, ipnet)
+		p.lookup.whitelistNets = append(p.lookup.whitelistNets, ipnet)
 	}
 
 	return nil
@@ -249,12 +249,12 @@ func (p *BlockIP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	clientIP := p.getClientIP(r)
 
 	if p.debug {
-		fmt.Printf("[%s] Request from IP: %s, Path: %s\n", p. name, clientIP, r.RequestURI)
+		fmt.Printf("[%s] Request from IP: %s, Path: %s\n", p.name, clientIP, r.RequestURI)
 	}
 
 	if clientIP == "" {
 		if p.debug {
-			fmt. Printf("[%s] Could not extract client IP\n", p.name)
+			fmt.Printf("[%s] Could not extract client IP\n", p.name)
 		}
 		p.next.ServeHTTP(w, r)
 		return
@@ -282,7 +282,7 @@ func (p *BlockIP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Check if IP is whitelisted (priority 1)
 	if p.lookup.isWhitelisted(clientIP) {
 		if p.debug {
-			fmt. Printf("[%s] IP %s is whitelisted\n", p.name, clientIP)
+			fmt.Printf("[%s] IP %s is whitelisted\n", p.name, clientIP)
 		}
 		p.lookup.cacheResult(clientIP, "whitelisted")
 		p.next.ServeHTTP(w, r)
@@ -290,12 +290,12 @@ func (p *BlockIP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if IP is blocked (priority 2)
-	if p. lookup.isBlocked(clientIP) {
+	if p.lookup.isBlocked(clientIP) {
 		if p.debug {
 			fmt.Printf("[%s] IP %s is blocked\n", p.name, clientIP)
 		}
-		p. lookup.cacheResult(clientIP, "blocked")
-		p. sendBlockResponse(w)
+		p.lookup.cacheResult(clientIP, "blocked")
+		p.sendBlockResponse(w)
 		return
 	}
 
@@ -314,7 +314,7 @@ func (p *BlockIP) sendBlockResponse(w http.ResponseWriter) {
 	w.WriteHeader(p.statusCode)
 	_, err := w.Write(p.responseBody)
 	if err != nil && p.debug {
-		fmt. Printf("[%s] Error writing response: %v\n", p. name, err)
+		fmt.Printf("[%s] Error writing response: %v\n", p.name, err)
 	}
 }
 
@@ -327,7 +327,7 @@ func (p *BlockIP) getClientIP(r *http.Request) string {
 			ip = strings.TrimSpace(ip)
 			if isValidIP(ip) {
 				if p.debug {
-					fmt. Printf("[%s] Extracted IP from X-Forwarded-For: %s\n", p.name, ip)
+					fmt.Printf("[%s] Extracted IP from X-Forwarded-For: %s\n", p.name, ip)
 				}
 				return ip
 			}
@@ -350,7 +350,7 @@ func (p *BlockIP) getClientIP(r *http.Request) string {
 		cfip = strings.TrimSpace(cfip)
 		if isValidIP(cfip) {
 			if p.debug {
-				fmt. Printf("[%s] Extracted IP from CF-Connecting-IP: %s\n", p.name, cfip)
+				fmt.Printf("[%s] Extracted IP from CF-Connecting-IP: %s\n", p.name, cfip)
 			}
 			return cfip
 		}
@@ -359,7 +359,7 @@ func (p *BlockIP) getClientIP(r *http.Request) string {
 	// Fall back to RemoteAddr
 	ip := r.RemoteAddr
 	if p.debug {
-		fmt. Printf("[%s] Using RemoteAddr: %s\n", p.name, ip)
+		fmt.Printf("[%s] Using RemoteAddr: %s\n", p.name, ip)
 	}
 
 	if strings.Contains(ip, ":") {
@@ -367,7 +367,7 @@ func (p *BlockIP) getClientIP(r *http.Request) string {
 		ip, _, err = net.SplitHostPort(ip)
 		if err != nil {
 			if p.debug {
-				fmt. Printf("[%s] Error parsing RemoteAddr %s: %v\n", p.name, r.RemoteAddr, err)
+				fmt.Printf("[%s] Error parsing RemoteAddr %s: %v\n", p.name, r.RemoteAddr, err)
 			}
 			return ""
 		}
@@ -381,7 +381,7 @@ func (p *BlockIP) getClientIP(r *http.Request) string {
 	}
 
 	if p.debug {
-		fmt. Printf("[%s] Extracted IP from RemoteAddr: %s\n", p.name, ip)
+		fmt.Printf("[%s] Extracted IP from RemoteAddr: %s\n", p.name, ip)
 	}
 
 	return ip
@@ -397,8 +397,8 @@ func isValidIP(ip string) bool {
 
 // checkCache retrieves cached lookup result
 func (s *ipLookupService) checkCache(ip string) string {
-	s.cache. mu.RLock()
-	defer s. cache.mu.RUnlock()
+	s.cache.mu.RLock()
+	defer s.cache.mu.RUnlock()
 
 	entry, exists := s.cache.cache[ip]
 	if !exists {
@@ -406,8 +406,8 @@ func (s *ipLookupService) checkCache(ip string) string {
 	}
 
 	// Check if cache entry is still valid
-	now := time.Now(). Unix()
-	if now-entry. Timestamp > s.cacheTTL {
+	now := time.Now().Unix()
+	if now-entry.Timestamp > s.cacheTTL {
 		return ""
 	}
 
@@ -419,7 +419,7 @@ func (s *ipLookupService) cacheResult(ip string, status string) {
 	s.cache.mu.Lock()
 	defer s.cache.mu.Unlock()
 
-	s. cache.cache[ip] = CacheEntry{
+	s.cache.cache[ip] = CacheEntry{
 		Status:    status,
 		Timestamp: time.Now().Unix(),
 	}
@@ -432,9 +432,9 @@ func (s *ipLookupService) cacheResult(ip string, status string) {
 
 // cleanupCache removes old entries from cache (must be called with lock held)
 func (s *ipLookupService) cleanupCache() {
-	now := time. Now().Unix()
+	now := time.Now().Unix()
 	count := 0
-	for ip, entry := range s.cache. cache {
+	for ip, entry := range s.cache.cache {
 		if now-entry.Timestamp > s.cacheTTL {
 			delete(s.cache.cache, ip)
 			count++
@@ -469,7 +469,7 @@ func (s *ipLookupService) isWhitelisted(ip string) bool {
 
 // isBlocked checks if the IP is blocked with optimized lookup
 func (s *ipLookupService) isBlocked(ip string) bool {
-	s. mu.RLock()
+	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	// Check direct IP match first (O(1) operation)
@@ -484,7 +484,7 @@ func (s *ipLookupService) isBlocked(ip string) bool {
 	}
 
 	for _, ipnet := range s.blockedNets {
-		if ipnet. Contains(parsedIP) {
+		if ipnet.Contains(parsedIP) {
 			return true
 		}
 	}
