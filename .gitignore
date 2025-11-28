@@ -1,0 +1,47 @@
+# Binaries
+traefik-plugin-blockip
+traefik-plugin-blockip-*
+*.so
+*. o
+*.a
+*.out
+
+# Build directories
+dist/
+build/
+bin/
+
+# Go
+vendor/
+go.sum
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test coverage
+*.coverprofile
+coverage.out
+coverage.html
+
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# OS
+Thumbs.db
+. AppleDouble
+.LSOverride
+*. swp
+*.swo
+
+# Logs
+*.log
+
+# Dependencies (but keep go.mod and go.sum for the repo)
