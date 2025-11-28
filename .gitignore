@@ -13,8 +13,7 @@ bin/
 
 # Go
 vendor/
-go.sum
-.env
+. env
 
 # IDE
 .vscode/
@@ -26,7 +25,7 @@ go.sum
 
 # Test coverage
 *.coverprofile
-coverage.out
+coverage. out
 coverage.html
 
 # Temp files
@@ -36,12 +35,8 @@ temp/
 
 # OS
 Thumbs.db
-. AppleDouble
+.AppleDouble
 .LSOverride
-*. swp
-*.swo
 
 # Logs
 *.log
-
-# Dependencies (but keep go.mod and go.sum for the repo)
