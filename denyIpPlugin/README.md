@@ -7,7 +7,7 @@ Middleware to deny requests based on IP address. Supports IPv4 and IPv6 addresse
 experimental:
   plugins:
     denyip:
-      moduleName: github.com/devops9838/traefik-plugin-denyip
+      moduleName: github.com/intaacopilot/traefik-plugin-blockip/denyIpPlugin
       version: v1.0.0
 ```
 
