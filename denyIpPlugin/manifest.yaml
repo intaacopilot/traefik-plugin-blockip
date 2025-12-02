@@ -1,0 +1,8 @@
+displayName: DenyIP
+type: middleware
+import: github.com/devops9838/traefik-plugin-denyip
+summary: 'Middleware to deny requests based on IP address'
+testData:
+  ipDenyList:
+    - "192.168.1.0/24"
+    - "10.0.0.1"
