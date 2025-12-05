@@ -19,7 +19,7 @@ const (
 // Logger handles logging for the plugin
 type Logger struct {
 	debug       bool
-	mu          sync. Mutex
+	mu          sync.Mutex
 	logBuffer   []string
 	maxBuffSize int
 }
@@ -36,7 +36,7 @@ func NewLogger(debug bool) *Logger {
 // Debug logs a debug message
 func (l *Logger) Debug(format string, args ...interface{}) {
 	if l.debug {
-		l. log("DEBUG", format, args...)
+		l.log("DEBUG", format, args...)
 	}
 }
 
@@ -57,11 +57,11 @@ func (l *Logger) Error(format string, args ...interface{}) {
 
 // log is the internal logging method
 func (l *Logger) log(level string, format string, args ...interface{}) {
-	l.mu. Lock()
+	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	message := fmt.Sprintf("[%s] %s - %s", time.Now().Format("2006-01-02 15:04:05"), level, fmt.Sprintf(format, args... ))
-	
+	message := fmt.Sprintf("[%s] %s - %s", time.Now().Format("2006-01-02 15:04:05"), level, fmt.Sprintf(format, args...))
+
 	// Print to stdout/stderr
 	fmt.Println(message)
 
@@ -83,13 +83,13 @@ func (l *Logger) GetLogs(count int) []string {
 		return l.logBuffer
 	}
 
-	return l. logBuffer[len(l.logBuffer)-count:]
+	return l.logBuffer[len(l.logBuffer)-count:]
 }
 
 // ClearLogs clears the log buffer
 func (l *Logger) ClearLogs() {
-	l.mu. Lock()
+	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	l. logBuffer = make([]string, 0)
+	l.logBuffer = make([]string, 0)
 }
